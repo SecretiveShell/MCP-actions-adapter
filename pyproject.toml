@@ -1,0 +1,17 @@
+[project]
+name = "mcp-actions-adapter"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "TerminalMan", email = "84923604+SecretiveShell@users.noreply.github.com" }
+]
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+mcp-actions-adapter = "mcp_actions_adapter:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

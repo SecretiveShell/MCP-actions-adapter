@@ -4,6 +4,6 @@ from mcp_actions_adapter.config import config
 app = FastAPI(
     title="MCP Actions Adapter",
     description="A simple adapter to convert a MCP server to a GPT actions compatible API",
-    servers=[{"production": config.url}],
+    servers=[{"url": config.url}],
 )
 

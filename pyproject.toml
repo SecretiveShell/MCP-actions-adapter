@@ -7,7 +7,11 @@ authors = [
     { name = "TerminalMan", email = "84923604+SecretiveShell@users.noreply.github.com" }
 ]
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "fastapi>=0.115.10",
+    "pydantic>=2.10.6",
+    "uvicorn>=0.34.0",
+]
 
 [project.scripts]
 mcp-actions-adapter = "mcp_actions_adapter:main"

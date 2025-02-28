@@ -1,7 +1,7 @@
 [project]
 name = "mcp-actions-adapter"
 version = "0.1.0"
-description = "Add your description here"
+description = "A simple adapter to convert a MCP server to a GPT actions compatible API"
 readme = "README.md"
 authors = [
     { name = "TerminalMan", email = "84923604+SecretiveShell@users.noreply.github.com" }

@@ -15,9 +15,29 @@ from mcp_actions_adapter.modeler import get_tool_model
 
 server_session = None
 
-def get_server():
+def get_server() -> mcp.client.session.ClientSession:
     global server_session
+    assert server_session is not None
     return server_session
+
+def create_tool_func(tool_name: str, ToolModel: type[BaseModel]):
+    """Factory function to create tool-specific API handlers.
+    
+    This is needed because of some weird fastapi behaviour when reading the function signature.
+    """
+
+    async def tool_func(model: ToolModel) -> str:
+        session = get_server()
+        result = await session.call_tool(tool_name, model.model_dump())
+        
+        text = ""
+        for line in result.content:
+            if line.type == "text":
+                text += line.text + "\n"
+
+        return text.strip()
+
+    return tool_func
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -44,8 +64,7 @@ async def lifespan(app: FastAPI):
 
                 ToolModel: type[BaseModel] = get_tool_model(tool_name, input_schema)
 
-                async def tool_func(model: ToolModel = Depends()) -> str:
-                    return "fake tool result"
+                tool_func = create_tool_func(tool_name, ToolModel)
                 
                 tool_func.__name__ = tool_name
                 tool_func.__doc__ = tool_description

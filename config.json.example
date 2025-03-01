@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "toolhouse": {
+            "command": "mcp-toolhouse",
+            "env": {
+                "TOOLHOUSE_API_KEY": "th-api-key",
+                "TOOLHOUSE_BUNDLE": "th-bundle-name"
+            }
+        }
+    }
+}

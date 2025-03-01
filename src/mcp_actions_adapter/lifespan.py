@@ -1,7 +1,7 @@
 import asyncio
 import os
 import shutil
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 from pydantic import BaseModel
@@ -17,25 +17,27 @@ from loguru import logger
 
 server_session = None
 
+
 def get_server() -> mcp.client.session.ClientSession:
     global server_session
     assert server_session is not None
     return server_session
 
+
 def create_tool_func(tool_name: str, ToolModel: type[BaseModel]):
     """Factory function to create tool-specific API handlers.
-    
+
     This is needed because of some weird fastapi behaviour when reading the function signature.
     """
 
-    message = f"Incoming tool call for function {tool_name}" 
+    message = f"Incoming tool call for function {tool_name}"
 
     async def tool_func(model: ToolModel) -> str:
         logger.info(message)
 
         session = get_server()
         result = await session.call_tool(tool_name, model.model_dump())
-        
+
         text = ""
         for line in result.content:
             if line.type == "text":
@@ -44,6 +46,7 @@ def create_tool_func(tool_name: str, ToolModel: type[BaseModel]):
         return text.strip()
 
     return tool_func
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -60,7 +63,6 @@ async def lifespan(app: FastAPI):
             server_session = session
 
             for tool in (await session.list_tools()).tools:
-
                 tool_name = tool.name
                 input_schema = tool.inputSchema.get("properties", {})
                 tool_description = tool.description
@@ -68,11 +70,10 @@ async def lifespan(app: FastAPI):
                 ToolModel: type[BaseModel] = get_tool_model(tool_name, input_schema)
 
                 tool_func = create_tool_func(tool_name, ToolModel)
-                
+
                 tool_func.__name__ = tool_name
                 tool_func.__doc__ = tool_description
 
                 app.post(f"/{tool_name}", response_model=str)(tool_func)
 
             yield
-    

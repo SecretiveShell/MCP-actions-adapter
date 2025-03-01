@@ -23,7 +23,7 @@ def get_tool_model(tool_name: str, input_schema: Dict[str, Any]) -> Type[BaseMod
     Returns:
         Type[BaseModel]: A dynamically generated Pydantic model.
     """
-    
+
     fields: Dict[str, tuple] = {}
 
     for name, schema in input_schema.items():
@@ -33,4 +33,4 @@ def get_tool_model(tool_name: str, input_schema: Dict[str, Any]) -> Type[BaseMod
             default_value = schema.get("default", ...)
             fields[name] = (field_type, default_value)
 
-    return create_model(f"{tool_name}_Model", **fields) # type: ignore
+    return create_model(f"{tool_name}_Model", **fields)  # type: ignore

@@ -13,6 +13,8 @@ import mcp.client.session
 
 from mcp_actions_adapter.modeler import get_tool_model
 
+from loguru import logger
+
 server_session = None
 
 def get_server() -> mcp.client.session.ClientSession:
@@ -26,7 +28,11 @@ def create_tool_func(tool_name: str, ToolModel: type[BaseModel]):
     This is needed because of some weird fastapi behaviour when reading the function signature.
     """
 
+    message = f"Incoming tool call for function {tool_name}" 
+
     async def tool_func(model: ToolModel) -> str:
+        logger.info(message)
+
         session = get_server()
         result = await session.call_tool(tool_name, model.model_dump())
         
@@ -47,8 +53,6 @@ async def lifespan(app: FastAPI):
 
     server.env = os.environ.copy() | (server.env or {})
 
-    # print(server)
-
     async with mcp.client.stdio.stdio_client(server) as client:
         async with mcp.client.session.ClientSession(*client) as session:
             await asyncio.sleep(0.1)
@@ -56,7 +60,6 @@ async def lifespan(app: FastAPI):
             server_session = session
 
             for tool in (await session.list_tools()).tools:
-                print(tool)
 
                 tool_name = tool.name
                 input_schema = tool.inputSchema.get("properties", {})

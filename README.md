@@ -2,6 +2,8 @@
 
 A simple adapter to convert a MCP server to a GPT actions compatible API
 
+![image](./assets/demo.png)
+
 ## Installation
 
 ```bash
